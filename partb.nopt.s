@@ -8,7 +8,7 @@ LC0:
 LC1:
 	.ascii "Enter your guess: \0"
 LC2:
-	.ascii "%c\0"
+	.ascii "%d\0"
 LC3:
 	.ascii "Too big, try again.\0"
 LC4:
@@ -21,7 +21,7 @@ LC5:
 _main:
 	push	ebp
 	mov	ebp, esp
-	sub	esp, 16
+	sub	esp, 12
 	call	___main
 	mov	DWORD PTR [esp], 0
 	call	_time
@@ -48,21 +48,23 @@ _main:
 L6:
 	mov	DWORD PTR [esp], OFFSET FLAT:LC1
 	call	_printf
+	mov	DWORD PTR [esp], OFFSET FLAT:LC2
 	lea	eax, [ebp-8]
+	mov [ebp-8], eax
 	call	_scanf
 	mov	eax, DWORD PTR [ebp-8]
 	cmp	eax, DWORD PTR [ebp-4]
 	jle	L2
 	mov	DWORD PTR [esp], OFFSET FLAT:LC3
 	call	_puts
-	jmp	L3
+	jmp	L6
 L2:
 	mov	eax, DWORD PTR [ebp-8]
 	cmp	eax, DWORD PTR [ebp-4]
 	jge	L4
 	mov	DWORD PTR [esp], OFFSET FLAT:LC4
 	call	_puts
-	jmp	L3
+	jmp	L6
 L4:
 	mov	DWORD PTR [esp], OFFSET FLAT:LC5
 	call	_puts

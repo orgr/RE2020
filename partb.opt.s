@@ -27,6 +27,8 @@ _main:
 	call	___main
 	mov	DWORD PTR [esp], 0
 	call	_time
+	mov	DWORD PTR [esp], eax
+	call	_srand
 	call	_rand
 	mov	ecx, 100
 	cdq
@@ -36,13 +38,13 @@ _main:
 	lea	ebx, [edx+1]
 	call	_puts
 L2:
-	mov	DWORD PTR [esp], OFFSET FLAT:LC0
+	mov	DWORD PTR [esp], OFFSET FLAT:LC1
 	call	_printf
 	mov	DWORD PTR [esp+4], esi
 	mov	DWORD PTR [esp], OFFSET FLAT:LC2
 	call	_scanf
 	cmp	ebx, DWORD PTR [ebp-12]
-	jge	L2
+	jge	L3
 	mov	DWORD PTR [esp], OFFSET FLAT:LC3
 	jmp	L7
 L3:

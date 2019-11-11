@@ -1,0 +1,5 @@
+Part C
+
+inspect element in Firefox
+search for the login form
+found hidden button, changed class from "button disabled" to button

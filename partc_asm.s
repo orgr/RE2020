@@ -62,7 +62,7 @@ main:
         push    eax
         push    0x0             # push null
         push    0x64616F72      # push d,a,o,r
-        call    strcmp
+        call    strcmpr
         add     esp, 16
         test    eax, eax
         jne     .L9
@@ -80,7 +80,7 @@ main:
         push    0x0000746E                      # push 0,0,t,n
         push    0x656D656C                      # push e,m,e,l
         push    0x74746573                      # push t,t,e,s
-        call    strcmp
+        call    strcmpr
         add     esp, 16
         test    eax, eax
         jne     .L10
@@ -103,7 +103,7 @@ main:
         push    eax
         push    0x0                     # push null
         push    0x79746963              # push y,t,i,c
-        call    strcmp
+        call    strcmpr
         add     esp, 16
         test    eax, eax
         jne     .L11
@@ -121,7 +121,7 @@ main:
         push    0x00746E65
         push    0x6D706F6C
         push    0x65766564                              # push 0,t,n,e,m,p,o,l,e,v,e,d
-        call    strcmp
+        call    strcmpr
         add     esp, 16
         test    eax, eax
         jne     .L8
@@ -222,7 +222,7 @@ GetScanF:
         ret                 # return
 
 GetPrintF:
-                push ebp            # store ebp
+        push ebp            # store ebp
         mov ebp, esp
 
         push 0x0                # pushing null
@@ -322,4 +322,44 @@ L2:
         add    eax,ebx
         add    esp,0x1c
         pop    ebp
+        ret
+
+strcmpr:
+        push    ebp
+        mov     ebp, esp
+        cmp     DWORD PTR [ebp+8], 0
+        je      .L60
+        cmp     DWORD PTR [ebp+12], 0
+        jne     .L90
+.L60:
+        mov     eax, 0
+        jmp     .L80
+.L110:
+        add     DWORD PTR [ebp+8], 1
+        add     DWORD PTR [ebp+12], 1
+.L90:
+        mov     eax, DWORD PTR [ebp+8]
+        movzx   eax, BYTE PTR [eax]
+        test    al, al
+        je      .L100
+        mov     eax, DWORD PTR [ebp+12]
+        movzx   eax, BYTE PTR [eax]
+        test    al, al
+        je      .L100
+        mov     eax, DWORD PTR [ebp+8]
+        movzx   edx, BYTE PTR [eax]
+        mov     eax, DWORD PTR [ebp+12]
+        movzx   eax, BYTE PTR [eax]
+        cmp     dl, al
+        je      .L110
+.L100:
+        mov     eax, DWORD PTR [ebp+8]
+        movzx   edx, BYTE PTR [eax]
+        mov     eax, DWORD PTR [ebp+12]
+        movzx   eax, BYTE PTR [eax]
+        cmp     dl, al
+        sete    al
+        movzx   eax, al
+.L80:
+        pop     ebp
         ret

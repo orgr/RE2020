@@ -33,22 +33,7 @@ chomp:
         nop
         pop     ebp
         ret
-.LC0:
-        .string "road"
-.LC1:
-        .string "settlement"
-.LC2:
-        .string "city"
-.LC3:
-        .string "development"
-.LC4:
-        .string "%s"
-.LC5:
-        .string ""
-.LC6:
-        .string "0"
-.LC7:
-        .string "%s%d "
+
 main:
         lea     ecx, [esp+4]
         and     esp, -16
@@ -75,7 +60,8 @@ main:
         sub     esp, 8
         lea     eax, [ebp-275]
         push    eax
-        push    OFFSET FLAT:.LC0
+        push    0x0             # push null
+        push    0x64616F72      # push d,a,o,r
         call    strcmp
         add     esp, 16
         test    eax, eax
@@ -91,7 +77,9 @@ main:
         sub     esp, 8
         lea     eax, [ebp-275]
         push    eax
-        push    OFFSET FLAT:.LC1
+        push    0x0000746E                      # push 0,0,t,n
+        push    0x656D656C                      # push e,m,e,l
+        push    0x74746573                      # push t,t,e,s
         call    strcmp
         add     esp, 16
         test    eax, eax
@@ -113,7 +101,8 @@ main:
         sub     esp, 8
         lea     eax, [ebp-275]
         push    eax
-        push    OFFSET FLAT:.LC2
+        push    0x0                     # push null
+        push    0x79746963              # push y,t,i,c
         call    strcmp
         add     esp, 16
         test    eax, eax
@@ -129,7 +118,9 @@ main:
         sub     esp, 8
         lea     eax, [ebp-275]
         push    eax
-        push    OFFSET FLAT:.LC3
+        push    0x00746E65
+        push    0x6D706F6C
+        push    0x65766564                              # push 0,t,n,e,m,p,o,l,e,v,e,d
         call    strcmp
         add     esp, 16
         test    eax, eax
@@ -147,9 +138,6 @@ main:
         sub     esp, 8
         lea     eax, [ebp-275]
         push    eax             # pushing input variable for scanf
-        #push    OFFSET FLAT:.LC4
-        #call    __isoc99_scanf
-
         push 0x00007325         # pushing ",s,%,"
         mov ebx, esp            # this will be the address pointing to the string "%s"
         push ebx
@@ -162,25 +150,22 @@ main:
         mov     DWORD PTR [ebp-16], 0
         jmp     .L13
 .L15:
-        mov     DWORD PTR [ebp-20], OFFSET FLAT:.LC5
+        mov     DWORD PTR [ebp-20], 0x0         # empty string "" as
         mov     eax, DWORD PTR [ebp-16]
         mov     eax, DWORD PTR [ebp-296+eax*4]
         cmp     eax, 9
         jg      .L14
-        mov     DWORD PTR [ebp-20], OFFSET FLAT:.LC6
+        mov     DWORD PTR [ebp-20], 0x00000030  # padding string "0"
 .L14:
         mov     eax, DWORD PTR [ebp-16]
         mov     eax, DWORD PTR [ebp-296+eax*4]
         sub     esp, 4
         push    eax
         push    DWORD PTR [ebp-20]
-        push    OFFSET FLAT:.LC7
-
-        #call    printf
-        ###
+        push    0x0                             # push null
+        push    0x64257325                      # push d,%,s,%
         call GetPrintF
         call eax
-        ###
         add     esp, 16
         add     DWORD PTR [ebp-16], 1
 .L13:

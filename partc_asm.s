@@ -146,14 +146,15 @@ main:
 .L8:
         sub     esp, 8
         lea     eax, [ebp-275]
-        push    eax
-        push    OFFSET FLAT:.LC4
+        push    eax             # pushing input variable for scanf
+        #push    OFFSET FLAT:.LC4
+        #call    __isoc99_scanf
 
-        ##call    __isoc99_scanf
-        ###
+        push 0x00007325         # pushing ",s,%,"
+        mov ebx, esp            # this will be the address pointing to the string "%s"
+        push ebx
         call GetScanF
         call eax
-        ###
 
         add     esp, 16
         cmp     eax, -1

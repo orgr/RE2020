@@ -1,79 +1,4 @@
-.file   "partc.s"
-.intel_syntax noprefix
-.def    ___main;        .scl    2;      .type   32;     .endef
-.section .rdata,"dr"
-.section        .text.startup,"x"
-.globl  _main
-.def    _main;  .scl    2;      .type   32;     .endef
-
-
-
-strcmpr:
-        push    ebp
-        mov     ebp, esp
-        cmp     DWORD PTR [ebp+8], 0
-        je      .L2
-        cmp     DWORD PTR [ebp+12], 0
-        jne     .L5
-.L2:
-        mov     eax, 1
-        jmp     .L4
-.L7:
-        add     DWORD PTR [ebp+8], 1
-        add     DWORD PTR [ebp+12], 1
-.L5:
-        mov     eax, DWORD PTR [ebp+8]
-        movzx   eax, BYTE PTR [eax]
-        test    al, al
-        je      .L6
-        mov     eax, DWORD PTR [ebp+12]
-        movzx   eax, BYTE PTR [eax]
-        test    al, al
-        je      .L6
-        mov     eax, DWORD PTR [ebp+8]
-        movzx   edx, BYTE PTR [eax]
-        mov     eax, DWORD PTR [ebp+12]
-        movzx   eax, BYTE PTR [eax]
-        cmp     dl, al
-        je      .L7
-.L6:
-        mov     eax, DWORD PTR [ebp+8]
-        movzx   edx, BYTE PTR [eax]
-        mov     eax, DWORD PTR [ebp+12]
-        movzx   eax, BYTE PTR [eax]
-        cmp     dl, al
-        setne   al
-        movzx   eax, al
-.L4:
-        pop     ebp
-        ret
-chomp:
-        push    ebp
-        mov     ebp, esp
-        jmp     .L9
-.L11:
-        add     DWORD PTR [ebp+8], 1
-.L9:
-        mov     eax, DWORD PTR [ebp+8]
-        movzx   eax, BYTE PTR [eax]
-        test    al, al
-        je      .L10
-        mov     eax, DWORD PTR [ebp+8]
-        movzx   eax, BYTE PTR [eax]
-        cmp     al, 10
-        je      .L10
-        mov     eax, DWORD PTR [ebp+8]
-        movzx   eax, BYTE PTR [eax]
-        cmp     al, 13
-        jne     .L11
-.L10:
-        mov     eax, DWORD PTR [ebp+8]
-        mov     BYTE PTR [eax], 0
-        nop
-        pop     ebp
-        ret
-
-_main:
+main:
         lea     ecx, [esp+4]
         and     esp, -16
         push    DWORD PTR [ecx-4]
@@ -82,16 +7,16 @@ _main:
         push    ecx
         sub     esp, 292
         mov     DWORD PTR [ebp-12], 0
-        jmp     .L13
-.L14:
+        jmp     L13
+L14:
         mov     eax, DWORD PTR [ebp-12]
         mov     DWORD PTR [ebp-296+eax*4], 0
         add     DWORD PTR [ebp-12], 1
-.L13:
+L13:
         cmp     DWORD PTR [ebp-12], 4
-        jle     .L14
-        jmp     .L15
-.L19:
+        jle     L14
+        jmp     L15
+L19:
         lea     eax, [ebp-275]
         push    eax
         call    chomp
@@ -107,15 +32,15 @@ _main:
         call    strcmpr
         add     esp, 8
         test    eax, eax
-        jne     .L16
+        jne     L16
         mov     eax, DWORD PTR [ebp-296]
         add     eax, 1
         mov     DWORD PTR [ebp-296], eax
         mov     eax, DWORD PTR [ebp-292]
         add     eax, 1
         mov     DWORD PTR [ebp-292], eax
-        jmp     .L15
-.L16:
+        jmp     L15
+L16:
         lea     eax, [ebp-275]
 
         push    0x0000746E                      # push 0,0,t,n
@@ -128,7 +53,7 @@ _main:
         call    strcmpr
         add     esp, 8
         test    eax, eax
-        jne     .L17
+        jne     L17
         mov     eax, DWORD PTR [ebp-296]
         add     eax, 1
         mov     DWORD PTR [ebp-296], eax
@@ -141,8 +66,8 @@ _main:
         mov     eax, DWORD PTR [ebp-284]
         add     eax, 1
         mov     DWORD PTR [ebp-284], eax
-        jmp     .L15
-.L17:
+        jmp     L15
+L17:
         lea     eax, [ebp-275]
        
         push    0x0                     # push null
@@ -154,15 +79,15 @@ _main:
         call    strcmpr
         add     esp, 8
         test    eax, eax
-        jne     .L18
+        jne     L18
         mov     eax, DWORD PTR [ebp-284]
         add     eax, 2
         mov     DWORD PTR [ebp-284], eax
         mov     eax, DWORD PTR [ebp-280]
         add     eax, 3
         mov     DWORD PTR [ebp-280], eax
-        jmp     .L15
-.L18:
+        jmp     L15
+L18:
         lea     eax, [ebp-275]
 
         push    0x00746E65              # push 0,t,n,e
@@ -175,7 +100,7 @@ _main:
         call    strcmpr
         add     esp, 8
         test    eax, eax
-        jne     .L15
+        jne     L15
         mov     eax, DWORD PTR [ebp-288]
         add     eax, 1
         mov     DWORD PTR [ebp-288], eax
@@ -185,7 +110,7 @@ _main:
         mov     eax, DWORD PTR [ebp-280]
         add     eax, 1
         mov     DWORD PTR [ebp-280], eax
-.L15:
+L15:
         push 0x00007325         # pushing ",s,%,"
         mov ebx, esp            # this will be the address pointing to the string "%s"
 
@@ -199,10 +124,10 @@ _main:
 
         add     esp, 16
         cmp     eax, -1
-        jne     .L19
+        jne     L19
         mov     DWORD PTR [ebp-16], 0
-        jmp     .L20
-.L22:
+        jmp     L20
+L22:
         push    0x0             # pushing \0
         mov     ebx, esp        
 
@@ -210,13 +135,13 @@ _main:
         mov     eax, DWORD PTR [ebp-16]
         mov     eax, DWORD PTR [ebp-296+eax*4]
         cmp     eax, 9
-        jg      .L21
+        jg      L21
 
         push    0x30            # pushing null, '0'
         mov     ebx, esp
 
         mov     DWORD PTR [ebp-20], ebx
-.L21:
+L21:
         mov     eax, DWORD PTR [ebp-16]
         mov     eax, DWORD PTR [ebp-296+eax*4]
         sub     esp, 4
@@ -233,9 +158,9 @@ _main:
         call eax
         add     esp, 16
         add     DWORD PTR [ebp-16], 1
-.L20:
+L20:
         cmp     DWORD PTR [ebp-16], 4
-        jle     .L22
+        jle     L22
         mov     eax, 0
         mov     ecx, DWORD PTR [ebp-4]
         leave
@@ -257,11 +182,11 @@ GetScanF:
         add esp, 0x14       # clear stack
 
         push 0x00006c6c         # pushing null,l,l
-        push 0x642e7472         # pushing d,.,t,r
+        push 0x642e7472         # pushing d,,t,r
         push 0x6376736d         # pushing c,v,s,m
         push esp
 
-        call eax            # call LoadLibrary("msvcrt.dll")
+        call eax            # call LoadLibrary("msvcrtdll")
         add esp, 0x0c       # clear stack (note arguments are cleared already)
 
         push eax            # store module handle for msvcrt
@@ -300,11 +225,11 @@ GetPrintF:
         add esp, 0x14       # clear stack
 
         push 0x00006c6c         # pushing null,l,l
-        push 0x642e7472         # pushing d,.,t,r
+        push 0x642e7472         # pushing d,,t,r
         push 0x6376736d         # pushing c,v,s,m
         push esp
 
-        call eax            # call LoadLibrary("msvcrt.dll")
+        call eax            # call LoadLibrary("msvcrtdll")
         add esp, 0x0c       # clear stack (note arguments are cleared already)
 
         push eax            # store module handle for msvcrt
@@ -329,62 +254,69 @@ GetPrintF:
         pop ebp             # restore ebp
         ret                 # return
 
-FindFunction:
-        push   ebp
-        mov    ebp,esp
-        sub    esp,0x1c
-        xor    eax,eax
-        mov    DWORD PTR [ebp-0x4],eax
-        mov    DWORD PTR [ebp-0x8],eax
-        mov    DWORD PTR [ebp-0xc],eax
-        mov    DWORD PTR [ebp-0x10],eax
-        mov    DWORD PTR [ebp-0x14],eax
-        mov    DWORD PTR [ebp-0x18],eax
-        mov    DWORD PTR [ebp-0x1c],eax
-        mov    edx,DWORD PTR [ebp+0x8]
-        mov    DWORD PTR [ebp-0x14],edx
-        mov    eax,fs:0x30
-        mov    eax,DWORD PTR [eax+0xc]
-        mov    eax,DWORD PTR [eax+0x14]
-        mov    eax,DWORD PTR [eax]
-        mov    eax,DWORD PTR [eax]
-        mov    eax,DWORD PTR [eax+0x10]
-        mov    ebx,eax
-        mov    eax,DWORD PTR [ebx+0x3c]
-        add    eax,ebx
-        mov    eax,DWORD PTR [eax+0x78]
-        add    eax,ebx
-        mov    ecx,DWORD PTR [eax+0x14]
-        mov    DWORD PTR [ebp-0x4],ecx
-        mov    ecx,DWORD PTR [eax+0x1c]
-        add    ecx,ebx
-        mov    DWORD PTR [ebp-0x8],ecx
-        mov    ecx,DWORD PTR [eax+0x20]
-        add    ecx,ebx
-        mov    DWORD PTR [ebp-0xc],ecx
-        mov    ecx,DWORD PTR [eax+0x24]
-        add    ecx,ebx
-        mov    DWORD PTR [ebp-0x10],ecx
-        xor    eax,eax
-        xor    ecx,ecx
-T1:
-        mov    esi,DWORD PTR [ebp-0x14]
-        mov    edi,DWORD PTR [ebp-0xc]
-        cld
-        mov    edi,DWORD PTR [edi+eax*4]
-        add    edi,ebx
-        mov    cx,0x8
-        repz cmps BYTE PTR ds:[esi],BYTE PTR es:[edi]
-        je     T2
-        inc    eax
-        cmp    eax,DWORD PTR [ebp-0x4]
-        jmp    T1
-T2:
-        mov    ecx,DWORD PTR [ebp-0x10]
-        mov    edx,DWORD PTR [ebp-0x8]
-        mov    ax,WORD PTR [ecx+eax*2]
-        mov    eax,DWORD PTR [edx+eax*4]
-        add    eax,ebx
-        add    esp,0x1c
-        pop    ebp
+strcmpr:
+        push    ebp
+        mov     ebp, esp
+        cmp     DWORD PTR [ebp+8], 0
+        je      L2
+        cmp     DWORD PTR [ebp+12], 0
+        jne     L5
+L2:
+        mov     eax, 1
+        jmp     L4
+L7:
+        add     DWORD PTR [ebp+8], 1
+        add     DWORD PTR [ebp+12], 1
+L5:
+        mov     eax, DWORD PTR [ebp+8]
+        movzx   eax, BYTE PTR [eax]
+        test    al, al
+        je      L6
+        mov     eax, DWORD PTR [ebp+12]
+        movzx   eax, BYTE PTR [eax]
+        test    al, al
+        je      L6
+        mov     eax, DWORD PTR [ebp+8]
+        movzx   edx, BYTE PTR [eax]
+        mov     eax, DWORD PTR [ebp+12]
+        movzx   eax, BYTE PTR [eax]
+        cmp     dl, al
+        je      L7
+L6:
+        mov     eax, DWORD PTR [ebp+8]
+        movzx   edx, BYTE PTR [eax]
+        mov     eax, DWORD PTR [ebp+12]
+        movzx   eax, BYTE PTR [eax]
+        cmp     dl, al
+        setne   al
+        movzx   eax, al
+L4:
+        pop     ebp
         ret
+chomp:
+        push    ebp
+        mov     ebp, esp
+        jmp     L9
+L11:
+        add     DWORD PTR [ebp+8], 1
+L9:
+        mov     eax, DWORD PTR [ebp+8]
+        movzx   eax, BYTE PTR [eax]
+        test    al, al
+        je      L10
+        mov     eax, DWORD PTR [ebp+8]
+        movzx   eax, BYTE PTR [eax]
+        cmp     al, 10
+        je      L10
+        mov     eax, DWORD PTR [ebp+8]
+        movzx   eax, BYTE PTR [eax]
+        cmp     al, 13
+        jne     L11
+L10:
+        mov     eax, DWORD PTR [ebp+8]
+        mov     BYTE PTR [eax], 0
+        nop
+        pop     ebp
+        ret
+
+FindFunction:

@@ -1,23 +1,27 @@
 #include <iostream>
 #include <windows.h>
-#include "safe_solver.h"
 
-#define SUPER_SECRET_PIPE_NAME 
 #define BUFFER_SIZE 0x400
+#define INITIAL_SLEEP 5 // how many seconds to sleep before execution
 
 #pragma once
+#pragma warning(disable : 4996)
 
+BOOL sendMessage(HANDLE&, LPCSTR);
+VOID recieveReply(HANDLE&, char*);
 int main()
 {
-	Sleep(3000);
-
+	Sleep(INITIAL_SLEEP * 1000);
+	// open dictionary file
+	FILE* dictFile = fopen("dictionary.txt", "r");
+	
+	
+		
 	// Listen to goblin safe's pipe server
+#pragma region Listen
 	LPCSTR Goblin_pipeName = "\\\\.\\pipe\\SuperSecretPipe";
-	TCHAR Goblin_writeBuffer[BUFFER_SIZE]{};
-	TCHAR Goblin_readBuffer[BUFFER_SIZE];
-	DWORD Goblin_cbToRead;
+	
 	HANDLE Goblin_hPipe;
-	bool Goblin_fSuccess;
 	
 	while (true)
 	{
@@ -43,13 +47,11 @@ int main()
 			std::cout << "Could not open pipe: 20 second wait timed out." << std::endl;
 			return -1;
 		}
-
 	}
-
-	// Create a local pipe server
+#pragma endregion
+	// Create local pipe server
+#pragma region CreateLocal
 	LPCSTR Local_pipeName = "\\\\.\\pipe\\SecretAnswerPipe";
-	TCHAR Local_writeBuffer[BUFFER_SIZE]{};
-	TCHAR Local_readBuffer[BUFFER_SIZE];
 	HANDLE Local_hPipe;
 	bool Local_fConnected;
 	Local_hPipe = CreateNamedPipeA(Local_pipeName, 3, 0, 1, BUFFER_SIZE, BUFFER_SIZE, 0x1D4C0, 0);
@@ -60,55 +62,74 @@ int main()
 		return -1;
 	}
 
+#pragma endregion
 	
-	
-	// Send a message (try a password from the dictionary) to the pipe server. 
-
-	LPCSTR lpvMessage = "MESSAGE";
-	DWORD cbToWrite = (strlen(lpvMessage) + 1) * sizeof(TCHAR);
-	DWORD cbWritten;
-	std::cout << (TEXT("Sending %d byte message: \"%s\"\n"), cbToWrite, lpvMessage);
-
-	Goblin_fSuccess = WriteFile(
-		Goblin_hPipe,                  // pipe handle 
-		lpvMessage,             // message 
-		cbToWrite,              // message length 
-		&cbWritten,             // bytes written 
-		NULL);                  // not overlapped 
-
-	if (!Goblin_fSuccess)
-	{
-		std::cout << TEXT("WriteFile to pipe failed. GLE=") << GetLastError() << std::endl;
-		return -1;
+#pragma region SendPasswords
+	char localPasswordBuffer[BUFFER_SIZE];
+	char responseBuffer[BUFFER_SIZE];
+	BOOL fSuccess;
+	while (fgets(localPasswordBuffer, BUFFER_SIZE, dictFile)) {
+		// send a password
+		fSuccess = sendMessage(Goblin_hPipe, localPasswordBuffer);
+		if (!fSuccess)
+		{
+			std::cout << TEXT("WriteFile to pipe failed. GLE=") << GetLastError() << std::endl;
+			return -1;
+		}
+		else
+		{
+			recieveReply(Local_hPipe, responseBuffer);
+			std::cout << "Recieved message: " << responseBuffer;
+		}
 	}
 
-	printf("\nMessage sent to server, receiving reply as follows:\n");
-
-	do
-	{
-		// Read from the pipe. 
-
-		Goblin_fSuccess = ReadFile(
-			Goblin_hPipe,    // pipe handle 
-			Goblin_readBuffer,    // buffer to receive reply 
-			BUFFER_SIZE * sizeof(TCHAR),  // size of buffer 
-			&Goblin_cbToRead,  // number of bytes read 
-			NULL);    // not overlapped 
-
-		if (!Goblin_fSuccess && GetLastError() != ERROR_MORE_DATA)
-			break;
-
-		std::cout << Goblin_readBuffer;
-	} while (!Goblin_fSuccess);  // repeat loop if ERROR_MORE_DATA 
-
-	if (!Goblin_fSuccess)
-	{
-		std::cout << (TEXT("ReadFile from pipe failed. GLE=%d\n"), GetLastError());
-		return -1;
-	}
+	
+#pragma endregion
 
 	std::cout << "\n<End of message, press ENTER to terminate connection and exit>";
 
 	CloseHandle(Goblin_hPipe);
+	CloseHandle(Local_hPipe);
 	return 0;
 }
+
+#pragma region Helpers
+BOOL sendMessage(HANDLE& hPipe, LPCSTR lpvMessage) {
+	DWORD cbToWrite = (strlen(lpvMessage) + 1) * sizeof(TCHAR);
+	DWORD cbWritten;
+	std::cout << "Sending " << cbToWrite << " bytes --> message: " << lpvMessage;
+
+	return WriteFile(
+		hPipe,                  // pipe handle 
+		lpvMessage,             // message 
+		cbToWrite,              // message length 
+		&cbWritten,             // bytes written 
+		NULL);                  // not overlapped 
+}
+
+VOID recieveReply(HANDLE& hPipe, char* lpvResponse) {
+	BOOL fSuccess;
+	DWORD cbToRead;
+	do
+	{
+		// Read from the pipe. 
+
+		fSuccess = ReadFile(
+			hPipe,    // pipe handle 
+			lpvResponse,    // buffer to receive reply 
+			BUFFER_SIZE * sizeof(TCHAR),  // size of buffer 
+			&cbToRead,  // number of bytes read 
+			NULL);    // not overlapped 
+
+		if (!fSuccess && GetLastError() != ERROR_MORE_DATA)
+			break;
+
+	} while (!fSuccess);  // repeat loop if ERROR_MORE_DATA 
+
+	if (!fSuccess)
+	{
+		std::cout << (TEXT("ReadFile from pipe failed. GLE=%d\n"), GetLastError());
+		return;
+	}
+}
+#pragma endregion

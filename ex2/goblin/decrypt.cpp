@@ -31,15 +31,15 @@ int main(int argc, char** argv)
     char* encrypted_password = argv[ENCRYPTED_PASSWORD];
     unsigned int rounds = (unsigned int)strtol(argv[ROUNDS], nullptr, 0x10);
     unsigned int delta = MAX_LONG_32;
-    unsigned long pass = strtoul(encrypted_password, 0, 0x10);
+    unsigned long long pass = strtoull(encrypted_password, 0, 0x10);
     unsigned int key_0 = string2ByteArray(key, blockSize);
     unsigned int key_1 = string2ByteArray(key + blockSize, blockSize);
     unsigned int key_2 = string2ByteArray(key + 2 * blockSize, blockSize);
     unsigned int key_3 = string2ByteArray(key + 3 * blockSize, blockSize);
     unsigned int key_blocks[4] = {key_0, key_1, key_2, key_3};
 
-    unsigned pass_0 = (unsigned int)(pass / pow(256, 4));
-    unsigned pass_1 = (unsigned int)(pass % (long)(pow(256, 4)));
+    unsigned int pass_0 = (unsigned int)(pass / pow(256, 4));
+    unsigned int pass_1 = pass - (unsigned int)(pow(256, 4) * pass_0);
 
 	for (int j = rounds - 1; j >= 0; --j)
 	{

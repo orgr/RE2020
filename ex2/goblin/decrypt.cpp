@@ -37,23 +37,20 @@ int main(int argc, char** argv)
 }
 
 
-long string2ByteArray(char* input)
+unsigned long string2ByteArray(char* input, int input_len)
 {
 	std::vector<char> bytes;
 	int i = 0;
-	while (*(input + i) != '\0')
+	for (int i = 0; i < input_len; i++)
 	{
 		bytes.push_back((char)*(input+i));
-		i++;
 	}
 
-	long result = 0;
+	unsigned long result = 0;
 	int j = 0;
-	char tmpByte = byte;
-	for (char byte : bytes)
+	for (j=0; j < input_len; j++)
 	{
-		result += (tmpByte << (2 * j));
-		j++;
+		result += (bytes[j] << (4 * (input_len + 2 - (2*j))));
 	}
 	return result;
 }
@@ -61,8 +58,8 @@ long string2ByteArray(char* input)
 
 void runRound(char input[2 * blockSize], char* output, long delta, char* key)
 {
-	long hexString;
-	hexString = string2ByteArray(input);
+	unsigned long hexString;
+	hexString = string2ByteArray(input, blockSize);
 	std::cout << hexString;
 
 }
